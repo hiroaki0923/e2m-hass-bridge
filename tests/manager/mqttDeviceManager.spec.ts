@@ -40,7 +40,7 @@ describe("setupMqttDeviceManager", () => {
     taskQueueSize: 0,
     addSubscribe: vi.fn(),
     close: vi.fn(),
-    setMessageHandler: vi.fn(),
+    setMessageHandler: vi.fn().mockResolvedValue(undefined),
   };
 
   beforeEach(() => {
@@ -90,6 +90,7 @@ describe("setupMqttDeviceManager", () => {
           handler: (topic: string, message: string) => void,
         ) => {
           handleMessage.mockImplementation(handler);
+          return Promise.resolve();
         },
       });
     });
@@ -165,6 +166,7 @@ describe("setupMqttDeviceManager", () => {
           handler: (topic: string, message: string) => void,
         ) => {
           handleMessage.mockImplementation(handler);
+          return Promise.resolve();
         },
       });
     });
@@ -194,6 +196,7 @@ describe("setupMqttDeviceManager", () => {
           handler: (topic: string, message: string) => void,
         ) => {
           handleMessage.mockImplementation(handler);
+          return Promise.resolve();
         },
       });
     });

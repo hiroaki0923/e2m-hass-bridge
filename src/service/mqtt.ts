@@ -16,7 +16,7 @@ export type MqttClient = {
   close: (wait?: boolean) => Promise<void>;
   setMessageHandler: (
     handler: (topic: string, message: string) => void | Promise<void>,
-  ) => void;
+  ) => Promise<void>;
 };
 
 export default async function initializeMqttClient(
@@ -31,8 +31,9 @@ export default async function initializeMqttClient(
   let currentMessageHandler:
     | ((topic: string, payload: Buffer) => void)
     | undefined;
+  let isInitialSubscribed = false;
 
-  const setupMessageHandler = (
+  const setupMessageHandler = async (
     handler: (topic: string, message: string) => void | Promise<void>,
   ) => {
     // 既存のリスナーを削除
@@ -57,15 +58,18 @@ export default async function initializeMqttClient(
 
     // 新しいリスナーを登録
     client.on("message", currentMessageHandler);
+
+    // 初回のみ購読を実行
+    if (!isInitialSubscribed) {
+      await client.subscribeAsync(subscribeTopics);
+      for (const topic of subscribeTopics) {
+        logger.debug(`[MQTT] subscribe topic: ${topic}`);
+      }
+      isInitialSubscribed = true;
+    }
   };
 
   logger.info("[MQTT] connected");
-
-  await client.subscribeAsync(subscribeTopics);
-
-  for (const topic of subscribeTopics) {
-    logger.debug(`[MQTT] subscribe topic: ${topic}`);
-  }
 
   let isMqttTaskRunning = true;
   const mqttTask = (async () => {
@@ -118,8 +122,8 @@ export default async function initializeMqttClient(
     publish,
     addSubscribe,
     close,
-    setMessageHandler: (handler) => {
-      setupMessageHandler(handler);
+    setMessageHandler: async (handler) => {
+      await setupMessageHandler(handler);
     },
   };
 }

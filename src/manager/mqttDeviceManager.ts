@@ -93,7 +93,7 @@ export default async function setupMqttDeviceManager(
     }
   };
 
-  mqtt.setMessageHandler(handleMessage);
+  await mqtt.setMessageHandler(handleMessage);
 
   // 更新通知をしないプロパティに対して、定期的に自動リクエストする
   let isAutoRequestRunning = true;

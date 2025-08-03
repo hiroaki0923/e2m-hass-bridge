@@ -35,7 +35,7 @@ beforeEach(() => {
 describe("initializeMqttClient", () => {
   test("MQTTクライアントが正常に接続される", async () => {
     const mqtt = await initializeMqttClient(["topic/test"]);
-    mqtt.setMessageHandler(mockHandleMessage);
+    await mqtt.setMessageHandler(mockHandleMessage);
 
     await mqtt.close();
 
@@ -59,7 +59,7 @@ describe("initializeMqttClient", () => {
     const mockPayload = Buffer.from("test message");
 
     const mqtt = await initializeMqttClient(["topic/test"]);
-    mqtt.setMessageHandler(mockHandleMessage);
+    await mqtt.setMessageHandler(mockHandleMessage);
 
     // メッセージイベントをトリガー
     const onMessageCallback = mockOn.mock.calls.find(
@@ -84,7 +84,7 @@ describe("initializeMqttClient", () => {
     });
 
     const mqtt = await initializeMqttClient(["topic/test"]);
-    mqtt.setMessageHandler(mockHandleMessage);
+    await mqtt.setMessageHandler(mockHandleMessage);
 
     const onMessageCallback = mockOn.mock.calls.find(
       ([event]) => event === "message",
@@ -106,7 +106,7 @@ describe("initializeMqttClient", () => {
     );
 
     const mqtt = await initializeMqttClient(["topic/test"]);
-    mqtt.setMessageHandler(mockHandleMessage);
+    await mqtt.setMessageHandler(mockHandleMessage);
 
     const onMessageCallback = mockOn.mock.calls.find(
       ([event]) => event === "message",
@@ -122,7 +122,7 @@ describe("initializeMqttClient", () => {
 
   test("publishがタスクキューに追加される", async () => {
     const mqtt = await initializeMqttClient(["topic/test"]);
-    mqtt.setMessageHandler(mockHandleMessage);
+    await mqtt.setMessageHandler(mockHandleMessage);
 
     // publishを呼び出す
     mqtt.publish("topic/publish", "test message", { retain: true });
@@ -172,7 +172,7 @@ describe("initializeMqttClient", () => {
     });
 
     const mqtt = await initializeMqttClient(["topic/test"]);
-    mqtt.setMessageHandler(mockHandleMessage);
+    await mqtt.setMessageHandler(mockHandleMessage);
 
     mqtt.publish("topic", "message");
 
